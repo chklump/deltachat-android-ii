@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -1042,6 +1043,10 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       quickCameraToggle.setVisibility(View.GONE);
       quickCameraToggle.setEnabled(false);
     }
+
+    String backgroundImagePath = TextSecurePreferences.getBackgroundImagePath(this);
+    Drawable image = Drawable.createFromPath(backgroundImagePath);
+    container.setBackground(image);
   }
 
   protected void initializeActionBar() {
