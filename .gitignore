@@ -33,3 +33,7 @@ jni/libspeex/.deps/
 
 # no vi tmp files
 *.swp
+
+# build artifacts from gradle
+java_pid*.hprof
+
