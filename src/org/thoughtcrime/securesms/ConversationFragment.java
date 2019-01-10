@@ -69,6 +69,7 @@ import org.thoughtcrime.securesms.database.Address;
 import org.thoughtcrime.securesms.mms.GlideApp;
 import org.thoughtcrime.securesms.permissions.Permissions;
 import org.thoughtcrime.securesms.recipients.Recipient;
+import org.thoughtcrime.securesms.util.Debouncer;
 import org.thoughtcrime.securesms.util.SaveAttachmentTask;
 import org.thoughtcrime.securesms.util.StickyHeaderDecoration;
 import org.thoughtcrime.securesms.util.ViewUtil;
@@ -117,6 +118,8 @@ public class ConversationFragment extends Fragment
   private TextView                    noMessageTextView;
   private ApplicationDcContext        dcContext;
 
+  private Debouncer markseenDebouncer;
+
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
@@ -128,6 +131,8 @@ public class ConversationFragment extends Fragment
     dcContext.eventCenter.addObserver(this, DcContext.DC_EVENT_MSG_DELIVERED);
     dcContext.eventCenter.addObserver(this, DcContext.DC_EVENT_MSG_FAILED);
     dcContext.eventCenter.addObserver(this, DcContext.DC_EVENT_MSG_READ);
+
+    markseenDebouncer = new Debouncer(800);
   }
 
   @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -397,7 +402,7 @@ public class ConversationFragment extends Fragment
     builder.setMessage(getActivity().getResources().getQuantityString(R.plurals.ask_delete_messages, messagesCount, messagesCount));
     builder.setCancelable(true);
 
-    builder.setPositiveButton(R.string.menu_delete_messages, new DialogInterface.OnClickListener() {
+    builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
         int[] ids = DcMsg.msgSetToIds(messageRecords);
@@ -591,7 +596,6 @@ public class ConversationFragment extends Fragment
       boolean currentlyAtBottom           = isAtBottom();
       boolean currentlyAtZoomScrollHeight = isAtZoomScrollHeight();
       int     positionId                  = getHeaderPositionId();
-      int     firstItemPosition            = getFirstItemPosition();
 
       if (currentlyAtBottom && !wasAtBottom) {
         ViewUtil.animateOut(scrollToBottomButton, scrollButtonOutAnimation, View.INVISIBLE);
@@ -608,7 +612,8 @@ public class ConversationFragment extends Fragment
       wasAtBottom           = currentlyAtBottom;
       wasAtZoomScrollHeight = currentlyAtZoomScrollHeight;
       lastPositionId        = positionId;
-      manageMessageSeenState(firstItemPosition);
+
+      markseenDebouncer.publish(() -> manageMessageSeenState());
     }
 
     @Override
@@ -638,10 +643,6 @@ public class ConversationFragment extends Fragment
       return ((LinearLayoutManager)list.getLayoutManager()).findLastVisibleItemPosition();
     }
 
-    private int getFirstItemPosition() {
-      return ((LinearLayoutManager)list.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
-    }
-
     private void bindScrollHeader(HeaderViewHolder headerViewHolder, int positionId) {
       if (((ConversationAdapter)list.getAdapter()).getHeaderId(positionId) != -1) {
         ((ConversationAdapter) list.getAdapter()).onBindHeaderViewHolder(headerViewHolder, positionId);
@@ -649,11 +650,26 @@ public class ConversationFragment extends Fragment
     }
   }
 
-  private void manageMessageSeenState(int firstItemPosition) {
-    DcMsg message = ((ConversationAdapter) list.getAdapter()).getMsg(firstItemPosition);
-    if (message.getFromId() != DC_CONTACT_ID_SELF && !message.isSeen()) {
-      dcContext.markseenMsgs(new int[]{message.getId()});
+  private void manageMessageSeenState() {
+
+    LinearLayoutManager layoutManager = (LinearLayoutManager)list.getLayoutManager();
+
+    int firstPos = layoutManager.findFirstVisibleItemPosition();
+    int lastPos = layoutManager.findLastVisibleItemPosition();
+    if(firstPos==RecyclerView.NO_POSITION || lastPos==RecyclerView.NO_POSITION) {
+      return;
     }
+
+    int[] ids = new int[lastPos - firstPos + 1];
+    int index = 0;
+    for(int pos = firstPos; pos <= lastPos; pos++) {
+      DcMsg message = ((ConversationAdapter) list.getAdapter()).getMsg(pos);
+      if (message.getFromId() != DC_CONTACT_ID_SELF && !message.isSeen()) {
+        ids[index] = message.getId();
+        index++;
+      }
+    }
+    dcContext.markseenMsgs(ids);
   }
 
 

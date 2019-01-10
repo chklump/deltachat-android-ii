@@ -57,6 +57,8 @@ public class DcMsg {
     public native int     getId              ();
     public native String  getText            ();
     public native long    getTimestamp       ();
+    public native long    getSortTimestamp   ();
+    public native boolean hasDeviatingTimestamp();
     public native int     getType            ();
     public native int     getState           ();
     public native int     getChatId          ();
@@ -146,9 +148,6 @@ public class DcMsg {
     }
     public boolean isSeen() {
         return getState() == DC_STATE_IN_SEEN;
-    }
-    public int getSubscriptionId() {
-        return -1;
     }
     public boolean isMms() {
         return false;

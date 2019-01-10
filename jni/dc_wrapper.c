@@ -971,6 +971,18 @@ JNIEXPORT jlong Java_com_b44t_messenger_DcMsg_getTimestamp(JNIEnv *env, jobject 
 }
 
 
+JNIEXPORT jlong Java_com_b44t_messenger_DcMsg_getSortTimestamp(JNIEnv *env, jobject obj)
+{
+	return JTIMESTAMP(dc_msg_get_sort_timestamp(get_dc_msg(env, obj)));
+}
+
+
+JNIEXPORT jboolean Java_com_b44t_messenger_DcMsg_hasDeviatingTimestamp(JNIEnv *env, jobject obj)
+{
+	return dc_msg_has_deviating_timestamp(get_dc_msg(env, obj))!=0;
+}
+
+
 JNIEXPORT jint Java_com_b44t_messenger_DcMsg_getType(JNIEnv *env, jobject obj)
 {
 	return dc_msg_get_viewtype(get_dc_msg(env, obj));
