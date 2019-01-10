@@ -234,6 +234,8 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       }
     });
 
+    dcContext.marknoticedChat(threadId);
+
     dcContext.eventCenter.addObserver(DcContext.DC_EVENT_CHAT_MODIFIED, this);
     dcContext.eventCenter.addObserver(DcContext.DC_EVENT_CONTACTS_CHANGED, this);
   }
@@ -297,7 +299,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     inputPanel.onPause();
 
     fragment.setLastSeen(System.currentTimeMillis());
-
+    markLastSeen();
     AudioSlidePlayer.stopAll();
   }
 
@@ -849,7 +851,23 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
     new AsyncTask<Integer, Void, Void>() {
       @Override
       protected Void doInBackground(Integer... params) {
-        MessageNotifier.updateNotification(ConversationActivity.this, threadId, false);
+        Context                 context    = ConversationActivity.this;
+        ApplicationDcContext dcContext = DcHelper.getContext(context);
+        int[] messageIds = dcContext.getChatMsgs(((ConversationActivity) context).threadId, 0, 0);
+        dcContext.markseenMsgs(messageIds);
+
+        MessageNotifier.updateNotification(context, threadId, false);
+
+        return null;
+      }
+    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, threadId);
+  }
+
+  private void markLastSeen() {
+    new AsyncTask<Integer, Void, Void>() {
+      @Override
+      protected Void doInBackground(Integer... params) {
+        dcContext.marknoticedChat(params[0]);
         return null;
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, threadId);
