@@ -282,8 +282,6 @@
     <string name="forward_to">Forward to …</string>
 
     <!-- preferences -->
-    <string name="pref_summary_privacy">Screen lock %1$s, Read receipts %2$s</string>
-    <string name="pref_summary_appearance">Theme %1$s, Language %2$s, Background %3$s</string>
     <string name="pref_summary_on">on</string>
     <string name="pref_summary_off">off</string>
     <string name="pref_summary_default">default</string>
@@ -362,7 +360,7 @@
     <string name="pref_managekeys_import_explain">Import secret keys from \"%1$s\"?\n\n• Existing secret keys will not be deleted\n\n• The last imported key will be used as the new default key unless it has the word \"legacy\" in its filename</string>
     <string name="pref_managekeys_secret_keys_exported_to_x">Secret keys written successfully to \"%1$s\".</string>
     <string name="pref_managekeys_secret_keys_imported_from_x">Secret keys imported from \"%1$s\".</string>
-    <string name="pref_background">Chat-Background</string>
+    <string name="pref_background">Background</string>
     <string name="pref_imap_folder_handling">IMAP folder handling</string>
     <string name="pref_imap_folder_warn_disable_defaults">If you disable this option, make sure, your server and your other clients are configured accordingly.\n\nOtherwise things may not work at all.</string>
     <string name="pref_watch_inbox_folder">Watch Inbox folder</string>
@@ -416,6 +414,7 @@
     <!-- qr code stuff -->
     <string name="qrscan_title">Scan QR code</string>
     <string name="qrscan_hint">Place your camera over the QR code</string>
+    <string name="qrscan_ask_join_group">Do you want to join the group \"%1$s\"?</string>
     <string name="qrscan_ask_join_verified_group">Do you want to join the verified group \"%1$s\"?</string>
     <string name="qrscan_ask_fingerprint_ask_oob">Verify contact and start chatting with \"%1$s\"?</string>
     <string name="qrscan_ask_chatting_fingerprint_ok">Contact \"%1$s\" verified. Start chatting?</string>
@@ -429,6 +428,7 @@
     <string name="qrshow_x_joining">%1$s joins.</string>
     <string name="qrshow_x_verified">%1$s verified.</string>
     <string name="qrshow_x_has_joined_group">%1$s securely joined the group.</string>
+    <string name="qrshow_join_group_hint">Scan this to join the group \"%1$s\".</string>
     <string name="qrshow_join_verified_group_hint">Scan this to join the verified group \"%1$s\".</string>
     <string name="qrshow_join_verified_group_title">QR invite code</string>
     <string name="qrshow_join_contact_title">QR verify code</string>
@@ -496,7 +496,7 @@
     <string name="language_sr">Serbian</string>
     <string name="language_sv">Swedish</string>
     <string name="language_ta">Tamil</string>
-    <string name="language_te">Telegu</string>
+    <string name="language_te">Telugu</string>
     <string name="language_tr">Turkish</string>
     <string name="language_uk">Ukrainian</string>
     <string name="language_zh_CN">Chinese</string>

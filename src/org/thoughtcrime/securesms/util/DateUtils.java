@@ -51,7 +51,13 @@ public class DateUtils extends android.text.format.DateUtils {
 
   private static String getFormattedDateTime(long time, String template, Locale locale) {
     final String localizedPattern = getLocalizedPattern(template, locale);
-    return new SimpleDateFormat(localizedPattern, locale).format(new Date(time));
+    String ret = new SimpleDateFormat(localizedPattern, locale).format(new Date(time));
+
+    // having ".," in very common and known abbreviates as weekdays or month names is not needed,
+    // looks ugly and makes the string longer than needed
+    ret = ret.replace(".,", ",");
+
+    return ret;
   }
 
   public static String getBriefRelativeTimeSpanString(final Context c, final Locale locale, final long timestamp) {
@@ -80,7 +86,8 @@ public class DateUtils extends android.text.format.DateUtils {
       return c.getResources().getQuantityString(R.plurals.n_minutes, mins, mins);
     } else {
       StringBuilder format = new StringBuilder();
-      if      (isWithin(timestamp,   6, TimeUnit.DAYS)) format.append("EEE ");
+      if      (DateUtils.isToday(timestamp))                 {}
+      else if (isWithin(timestamp,   6, TimeUnit.DAYS)) format.append("EEE ");
       else if (isWithin(timestamp, 365, TimeUnit.DAYS)) format.append("MMM d, ");
       else                                              format.append("MMM d, yyyy, ");
 
@@ -143,7 +150,7 @@ public class DateUtils extends android.text.format.DateUtils {
     } else if (isYesterday(timestamp)) {
       return context.getString(R.string.yesterday);
     } else {
-      return getFormattedDateTime(timestamp, "EEE, MMM d, yyyy", locale);
+      return getFormattedDateTime(timestamp, "EEEE, MMMM d, yyyy", locale);
     }
   }
 

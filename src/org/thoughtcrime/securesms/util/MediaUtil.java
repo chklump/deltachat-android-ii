@@ -30,6 +30,7 @@ import org.thoughtcrime.securesms.mms.Slide;
 import org.thoughtcrime.securesms.mms.VideoSlide;
 import org.thoughtcrime.securesms.providers.PersistentBlobProvider;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -265,27 +266,5 @@ public class MediaUtil {
     }
 
     return null;
-  }
-
-  public static class ThumbnailData {
-    Bitmap bitmap;
-    float aspectRatio;
-
-    public ThumbnailData(Bitmap bitmap) {
-      this.bitmap      = bitmap;
-      this.aspectRatio = (float) bitmap.getWidth() / (float) bitmap.getHeight();
-    }
-
-    public Bitmap getBitmap() {
-      return bitmap;
-    }
-
-    public float getAspectRatio() {
-      return aspectRatio;
-    }
-
-    public InputStream toDataStream() {
-      return BitmapUtil.toCompressedJpeg(bitmap);
-    }
   }
 }
