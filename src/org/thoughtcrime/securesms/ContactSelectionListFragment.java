@@ -291,6 +291,22 @@ public class ContactSelectionListFragment extends    Fragment
 
   @Override
   public void onLoadFinished(Loader<DcContactsLoader.Ret> loader, DcContactsLoader.Ret data) {
+    if(selectedContacts!=null && !selectedContacts.isEmpty()) {
+      List<Integer> resortedContacts = new ArrayList<Integer>();
+      for (String selectedContact : selectedContacts ) {
+        resortedContacts.add(dcContext.lookupContactIdByAddr(selectedContact));
+      }
+      for(int i=0; i<data.ids.length; i++) {
+        if (resortedContacts.contains(data.ids[i])) {
+          continue;
+        }
+        resortedContacts.add(data.ids[i]);
+      }
+      for (int i=0; i < data.ids.length; i++)
+      {
+        data.ids[i] = resortedContacts.get(i);
+      }
+    }
     ((ContactSelectionListAdapter) recyclerView.getAdapter()).changeData(data);
     emptyText.setText(R.string.contacts_empty_hint);
     boolean useFastScroller = (recyclerView.getAdapter().getItemCount() > 20);
