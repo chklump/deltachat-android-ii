@@ -59,7 +59,6 @@ import com.b44t.messenger.DcEventCenter;
 import org.thoughtcrime.securesms.ConversationListAdapter.ItemClickListener;
 import org.thoughtcrime.securesms.components.recyclerview.DeleteItemAnimator;
 import org.thoughtcrime.securesms.components.registration.PulsingFloatingActionButton;
-import org.thoughtcrime.securesms.components.reminder.DozeReminder;
 import org.thoughtcrime.securesms.components.reminder.Reminder;
 import org.thoughtcrime.securesms.components.reminder.ReminderView;
 import org.thoughtcrime.securesms.connect.ApplicationDcContext;
@@ -275,9 +274,9 @@ public class ConversationListFragment extends Fragment
           @Override
           protected void onPreExecute() {
             dialog = ProgressDialog.show(getActivity(),
-                                         getActivity().getString(R.string.one_moment),
-                                         getActivity().getString(R.string.one_moment),
-                                         true, false);
+                "",
+                getActivity().getString(R.string.one_moment),
+                true, false);
           }
 
           @Override
@@ -419,7 +418,7 @@ public class ConversationListFragment extends Fragment
     if (archive) inflater.inflate(R.menu.conversation_list_batch_unarchive, menu);
     else         inflater.inflate(R.menu.conversation_list_batch_archive, menu);
 
-    inflater.inflate(R.menu.action_mode_delete, menu);
+    inflater.inflate(R.menu.conversation_list, menu);
 
     mode.setTitle("1");
 

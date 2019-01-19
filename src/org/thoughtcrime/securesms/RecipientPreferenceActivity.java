@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.b44t.messenger.DcChat;
 import com.b44t.messenger.DcContact;
@@ -47,6 +48,7 @@ import org.thoughtcrime.securesms.util.DynamicNoActionBarTheme;
 import org.thoughtcrime.securesms.util.DynamicTheme;
 import org.thoughtcrime.securesms.util.Prefs;
 import org.thoughtcrime.securesms.util.Prefs.VibrateState;
+import org.thoughtcrime.securesms.util.Util;
 import org.thoughtcrime.securesms.util.ViewUtil;
 
 @SuppressLint("StaticFieldLeak")
@@ -276,8 +278,8 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
       ListPreference        vibrateMessagePreference  = (ListPreference) this.findPreference(PREFERENCE_MESSAGE_VIBRATE);
 
       // contact settings
-      PreferenceCategory    privacyCategory           = (PreferenceCategory) this.findPreference("privacy_settings");
-      PreferenceCategory    divider                   = (PreferenceCategory) this.findPreference("divider");
+      PreferenceCategory    contactInfoCategory       = (PreferenceCategory) this.findPreference("contact_info");
+      PreferenceCategory    contactInfoDivider        = (PreferenceCategory) this.findPreference("contact_divider");
       Preference            addrPreference            = this.findPreference("pref_key_recipient_addr");
       Preference            encryptionPreference      = this.findPreference(PREFERENCE_ENCRYPTION);
       Preference            editNamePreference        = this.findPreference("pref_key_recipient_edit_name");
@@ -298,17 +300,50 @@ public class RecipientPreferenceActivity extends PassphraseRequiredActionBarActi
 
       if (chatToEdit.getId()!=0 && chatToEdit.isGroup()) {
         // group
-        if (privacyCategory      != null) privacyCategory.setVisible(false);
+        if (contactInfoCategory != null) contactInfoCategory.setVisible(false);
         if (addrPreference       != null) addrPreference.setVisible(false);
         if (encryptionPreference != null) encryptionPreference.setVisible(false);
         if (editNamePreference   != null) editNamePreference.setVisible(false); // group name is currently somewhere else ...
         if (blockPreference      != null) blockPreference.setVisible(false);
 
-        if (divider              != null) divider.setVisible(false);
+        if (contactInfoDivider != null) contactInfoDivider.setVisible(false);
       }
       else {
         // contact view
-        addrPreference.setTitle(getProfileContact().getAddr());
+        DcContact contact = getProfileContact();
+        String address = contact.getAddr();
+        addrPreference.setTitle(address);
+        addrPreference.setOnPreferenceClickListener(preference -> {
+          new AlertDialog.Builder(getContext())
+              .setTitle(address)
+              .setItems(new CharSequence[]{
+                getContext().getString(R.string.menu_copy_to_clipboard)
+              },
+              (dialogInterface, i) -> {
+                Util.writeTextToClipboard(getContext(), address);
+                Toast.makeText(getContext(), getString(R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show();
+              })
+              .setNegativeButton(R.string.cancel, null)
+              .show();
+          return false;
+        });
+
+        this.findPreference("pref_key_new_chat").setOnPreferenceClickListener(preference -> {
+          new AlertDialog.Builder(getActivity())
+              .setMessage(getActivity().getString(R.string.ask_start_chat_with, contact.getNameNAddr()))
+              .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                int chatId = dcContext.createChatByContactId(contact.getId());
+                if (chatId != 0) {
+                  Intent intent = new Intent(getActivity(), ConversationActivity.class);
+                  intent.putExtra(ConversationActivity.THREAD_ID_EXTRA, chatId);
+                  getActivity().startActivity(intent);
+                  getActivity().finish();
+                }
+              })
+              .setNegativeButton(R.string.cancel, null)
+              .show();
+          return false;
+        });
 
         if (contactToEditRecipient.isBlocked()) blockPreference.setTitle(R.string.menu_unblock_contact);
         else                                    blockPreference.setTitle(R.string.menu_block_contact);

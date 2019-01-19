@@ -181,8 +181,13 @@ public class ConversationFragment extends Fragment
       }
     }else{
       String name = getListAdapter().getChatName();
-      String message = getString(R.string.chat_no_messages_hint, name, name);
-      noMessageTextView.setText(message);
+      if(dcContext.getChat((int)threadId).isSelfTalk()) {
+        noMessageTextView.setText(R.string.chat_no_messages);
+      }
+      else {
+        String message = getString(R.string.chat_no_messages_hint, name, name);
+        noMessageTextView.setText(message);
+      }
     }
   }
 
@@ -258,50 +263,20 @@ public class ConversationFragment extends Fragment
 
   private void setCorrectMenuVisibility(Menu menu) {
     Set<DcMsg>         messageRecords = getListAdapter().getSelectedItems();
-    boolean            actionMessage  = false;
-    boolean            hasText        = false;
 
     if (actionMode != null && messageRecords.size() == 0) {
       actionMode.finish();
       return;
     }
 
-    for (DcMsg messageRecord : messageRecords) {
-      if (messageRecord.isGroupAction() ||
-          messageRecord.isJoined() || messageRecord.isExpirationTimerUpdate() ||
-          messageRecord.isEndSession() || messageRecord.isIdentityUpdate() ||
-          messageRecord.isIdentityVerified() || messageRecord.isIdentityDefault())
-      {
-        actionMessage = true;
-      }
-      if (messageRecord.getBody().length() > 0) {
-        hasText = true;
-      }
-      if (actionMessage && hasText) {
-        break;
-      }
-    }
-
     if (messageRecords.size() > 1) {
-//      menu.findItem(R.id.menu_context_forward).setVisible(false);
-      menu.findItem(R.id.menu_context_reply).setVisible(false);
       menu.findItem(R.id.menu_context_details).setVisible(false);
       menu.findItem(R.id.menu_context_save_attachment).setVisible(false);
-      menu.findItem(R.id.menu_context_resend).setVisible(false);
     } else {
       DcMsg messageRecord = messageRecords.iterator().next();
-
-      menu.findItem(R.id.menu_context_resend).setVisible(false/*messageRecord.isFailed()*/);
+      menu.findItem(R.id.menu_context_details).setVisible(true);
       menu.findItem(R.id.menu_context_save_attachment).setVisible(messageRecord.hasFile());
-
-      menu.findItem(R.id.menu_context_forward).setVisible(!actionMessage);
-      menu.findItem(R.id.menu_context_details).setVisible(!actionMessage);
-      menu.findItem(R.id.menu_context_reply).setVisible(false/*!actionMessage             &&
-                                                        !messageRecord.isPending() &&
-                                                        !messageRecord.isFailed()  &&
-                                                        messageRecord.isSecure()*/);
     }
-    menu.findItem(R.id.menu_context_copy).setVisible(!actionMessage && hasText);
   }
 
   private ConversationAdapter getListAdapter() {
@@ -397,21 +372,17 @@ public class ConversationFragment extends Fragment
 
   private void handleDeleteMessages(final Set<DcMsg> messageRecords) {
     int                 messagesCount = messageRecords.size();
-    AlertDialog.Builder builder       = new AlertDialog.Builder(getActivity());
 
-    builder.setMessage(getActivity().getResources().getQuantityString(R.plurals.ask_delete_messages, messagesCount, messagesCount));
-    builder.setCancelable(true);
-
-    builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
+    new AlertDialog.Builder(getActivity())
+      .setMessage(getActivity().getResources().getQuantityString(R.plurals.ask_delete_messages, messagesCount, messagesCount))
+      .setCancelable(true)
+      .setPositiveButton(R.string.delete, (dialog, which) -> {
         int[] ids = DcMsg.msgSetToIds(messageRecords);
         dcContext.deleteMsgs(ids);
-      }
-    });
-
-    builder.setNegativeButton(android.R.string.cancel, null);
-    builder.show();
+        actionMode.finish();
+      })
+      .setNegativeButton(android.R.string.cancel, null)
+      .show();
   }
 
   private void handleDisplayDetails(DcMsg dcMsg) {
@@ -461,6 +432,7 @@ public class ConversationFragment extends Fragment
             SaveAttachmentTask.Attachment attachment = new SaveAttachmentTask.Attachment(
                 Uri.fromFile(message.getFileAsFile()), message.getFilemime(), message.getDateReceived(), message.getFilename());
             saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, attachment);
+            actionMode.finish();
           })
           .execute();
     });
@@ -853,14 +825,12 @@ public class ConversationFragment extends Fragment
           return true;
         case R.id.menu_context_delete_message:
           handleDeleteMessages(getListAdapter().getSelectedItems());
-          actionMode.finish();
           return true;
         case R.id.menu_context_details:
           handleDisplayDetails(getSelectedMessageRecord());
           actionMode.finish();
           return true;
         case R.id.menu_context_forward:
-//          handleForwardMessage(getSelectedMessageRecord());
           handleForwardMessage(getListAdapter().getSelectedItems());
           actionMode.finish();
           return true;
@@ -870,7 +840,6 @@ public class ConversationFragment extends Fragment
           return true;
         case R.id.menu_context_save_attachment:
           handleSaveAttachment(getSelectedMessageRecord());
-          actionMode.finish();
           return true;
         case R.id.menu_context_reply:
           handleReplyMessage(getSelectedMessageRecord());

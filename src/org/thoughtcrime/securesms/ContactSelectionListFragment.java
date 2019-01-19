@@ -137,10 +137,11 @@ public class ContactSelectionListFragment extends    Fragment
       @Override
       public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.action_mode_delete, menu);
+        inflater.inflate(R.menu.contact_list, menu);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.action_mode_status_bar));
         }
+        actionMode.setTitle("1");
         return true;
       }
 
@@ -201,7 +202,7 @@ public class ContactSelectionListFragment extends    Fragment
             }
             if (failed) {
               Util.runOnMain(()-> {
-                Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), R.string.cannot_delete_contacts_in_use, Toast.LENGTH_LONG).show();
               });
             }
           }).start();
@@ -356,6 +357,7 @@ public class ContactSelectionListFragment extends    Fragment
     {
       if (handleActionMode) {
         if (actionMode != null) {
+          actionMode.setTitle(String.valueOf(getContactSelectionListAdapter().getActionModeSelection().size()));
           finishActionModeIfSelectionIsEmpty();
         }
         return;
