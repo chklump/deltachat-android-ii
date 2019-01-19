@@ -79,7 +79,6 @@
         <item name="actionBarStyle">@style/TextSecure.LightActionBar</item>
         <item name="actionBarTabBarStyle">@style/TextSecure.LightActionBar.TabBar</item>
         <item name="actionModeBackground">@color/gray50</item>
-        <item name="actionModeCloseDrawable">@drawable/ic_close_white_24dp</item>
         <item name="colorPrimary">@color/textsecure_primary</item>
         <item name="colorPrimaryDark">@color/textsecure_primary_dark</item>
         <item name="colorAccent">@color/delta_accent</item>
@@ -193,7 +192,6 @@
         <item name="menu_lock_icon">@drawable/ic_lock_white_24dp</item>
         <item name="menu_lock_icon_small">@drawable/ic_lock_white_18dp</item>
         <item name="menu_trash_icon">@drawable/ic_delete_white_24dp</item>
-        <item name="menu_selectall_icon">@drawable/ic_select_all_white_24dp</item>
         <item name="menu_accept_icon">@drawable/ic_check_white_24dp</item>
         <item name="menu_copy_icon">@drawable/ic_content_copy_white_24dp</item>
         <item name="menu_info_icon">@drawable/ic_info_outline_white_24dp</item>
@@ -228,7 +226,6 @@
         <item name="actionBarTabBarStyle">@style/TextSecure.DarkActionBar.TabBar</item>
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
         <item name="actionModeBackground">@color/gray50</item>
-        <item name="actionModeCloseDrawable">@drawable/ic_close_white_24dp</item>
         <item name="android:textColor">@color/text_color_dark_theme</item>
         <item name="android:textColorSecondary">@color/text_color_secondary_dark_theme</item>
         <item name="colorAccent">@color/textsecure_primary_dark</item>
@@ -340,7 +337,6 @@
         <item name="menu_lock_icon">@drawable/ic_lock_white_24dp</item>
         <item name="menu_lock_icon_small">@drawable/ic_lock_white_18dp</item>
         <item name="menu_trash_icon">@drawable/ic_delete_white_24dp</item>
-        <item name="menu_selectall_icon">@drawable/ic_select_all_white_24dp</item>
         <item name="menu_accept_icon">@drawable/ic_check_white_24dp</item>
         <item name="menu_copy_icon">@drawable/ic_content_copy_white_24dp</item>
         <item name="menu_info_icon">@drawable/ic_info_outline_white_24dp</item>

@@ -14,6 +14,7 @@ public class DcContext {
     public final static int DC_EVENT_WARNING                     = 300;
     public final static int DC_EVENT_ERROR                       = 400;
     public final static int DC_EVENT_ERROR_NETWORK               = 401;
+    public final static int DC_EVENT_ERROR_SELF_NOT_IN_GROUP     = 410;
     public final static int DC_EVENT_MSGS_CHANGED                = 2000;
     public final static int DC_EVENT_INCOMING_MSG                = 2005;
     public final static int DC_EVENT_MSG_DELIVERED               = 2010;
@@ -53,6 +54,13 @@ public class DcContext {
     public final static int DC_QR_TEXT              = 330;
     public final static int DC_QR_URL               = 332;
     public final static int DC_QR_ERROR             = 400;
+
+    public final static int DC_LP_IMAP_SOCKET_STARTTLS =   0x100;
+    public final static int DC_LP_IMAP_SOCKET_SSL      =   0x200;
+    public final static int DC_LP_IMAP_SOCKET_PLAIN    =   0x400;
+    public final static int DC_LP_SMTP_SOCKET_STARTTLS = 0x10000;
+    public final static int DC_LP_SMTP_SOCKET_SSL      = 0x20000;
+    public final static int DC_LP_SMTP_SOCKET_PLAIN    = 0x40000;
 
     public DcContext(String osName) {
         handleEvent(0,0,0); // call handleEvent() to make sure it is not optimized away and JNI won't find it

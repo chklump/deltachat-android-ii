@@ -152,7 +152,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
   private static final int PICK_CONTACT        = 4;
   private static final int GROUP_EDIT          = 6;
   private static final int TAKE_PHOTO          = 7;
-  private static final int ADD_CONTACT         = 8;
   private static final int PICK_LOCATION       = 9;
   private static final int SMS_DEFAULT         = 11;
 
@@ -362,7 +361,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       addAttachmentContactInfo(data);
       break;
     case GROUP_EDIT:
-      recipient = Recipient.from(this, data.getParcelableExtra(GroupCreateActivity.GROUP_ADDRESS_EXTRA));
       dcChat = dcContext.getChat(threadId);
       titleView.setTitle(glideRequests, dcChat);
       supportInvalidateOptionsMenu();
@@ -371,10 +369,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       if (attachmentManager.getCaptureUri() != null) {
         setMedia(attachmentManager.getCaptureUri(), MediaType.IMAGE);
       }
-      break;
-    case ADD_CONTACT:
-      recipient = Recipient.from(this, recipient.getAddress());
-      fragment.reloadList();
       break;
     case PICK_LOCATION:
       SignalPlace place = new SignalPlace(PlacePicker.getPlace(data, this));
@@ -545,7 +539,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
 
   private void handleEditPushGroup() {
     Intent intent = new Intent(ConversationActivity.this, GroupCreateActivity.class);
-    intent.putExtra(GroupCreateActivity.GROUP_ADDRESS_EXTRA, recipient.getAddress());
+    intent.putExtra(GroupCreateActivity.EDIT_GROUP_CHAT_ID, threadId);
     if (dcChat.isVerified()) {
       intent.putExtra(GroupCreateActivity.GROUP_CREATE_VERIFIED_EXTRA, true);
     }
@@ -980,6 +974,7 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
               BitmapUtil.recodeImageMsg(ConversationActivity.this, msg);
             }
             dcContext.sendMsg(dcChat.getId(), msg);
+            Util.runOnMain(()-> sendComplete(dcChat.getId()));
           }
           dcContext.setDraft(dcChat.getId(), null);
         }
@@ -995,7 +990,6 @@ public class ConversationActivity extends PassphraseRequiredActionBarActivity
       }
     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, msg, recompress);
 
-    sendComplete(dcChat.getId());
     return future;
   }
 
